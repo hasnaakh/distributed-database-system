@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <title>Database Management</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            direction: ltr;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            border-bottom: none;
+            border-radius: 5px 5px 0 0;
+            margin-right: 5px;
+        }
+        .tab.active {
+            background-color: #fff;
+            border-bottom: 1px solid white;
+            margin-bottom: -1px;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        input, select {
+            padding: 10px 14px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        input:focus, select:focus {
+            outline: none;
+            border-color: #800020;
+            box-shadow: 0 0 5px rgba(128, 0, 32, 0.2);
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px 0;
+            background-color: #800020;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
+        }
+        button:hover {
+            background-color: #660018;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+        button:active {
+            transform: translateY(0);
+            box-shadow: none;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .dynamic-fields {
+            margin-top: 10px;
+        }
+        .field-row {
+            display: flex;
+            margin-bottom: 8px;
+        }
+        .field-row input {
+            flex: 1;
+            margin-right: 5px;
+        }
+        .message {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Database Management System</h1>
+        
+        <div class="tabs">
+            <div class="tab active" data-tab="db-operations">Database Operations</div>
+            <div class="tab" data-tab="table-operations">Table Operations</div>
+            <div class="tab" data-tab="data-operations">Data Operations</div>
+        </div>
+        
+        <div id="message-box"></div>
+        
+        <div class="tab-content active" id="db-operations">
+            <h2>Manage Databases</h2>
+            <div class="form-group">
+                <h3>Create New Database</h3>
+                <input type="text" id="new-db-name" placeholder="Database Name">
+                <button onclick="createDatabase()">Create</button>
+            </div>
+            <div class="form-group">
+                <h3>Delete Database</h3>
+                <input type="text" id="delete-db-name" placeholder="Database Name">
+                <button onclick="dropDatabase()">Delete</button>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="table-operations">
+            <h2>Manage Tables</h2>
+            <div class="form-group">
+                <h3>Create New Table</h3>
+                <input type="text" id="db-name-for-table" placeholder="Database Name">
+                <input type="text" id="new-table-name" placeholder="Table Name">
+                <div class="dynamic-fields" id="table-columns">
+                    <div class="field-row">
+                        <input type="text" placeholder="Column Name" value="id">
+                    </div>
+                </div>
+                <button onclick="addColumn()">Add Column</button>
+                <button onclick="createTable()">Create Table</button>
+            </div>
+            <div class="form-group">
+                <h3>Delete Table</h3>
+                <input type="text" id="db-name-for-drop" placeholder="Database Name">
+                <input type="text" id="table-to-drop" placeholder="Table Name">
+                <button onclick="dropTable()">Delete Table</button>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="data-operations">
+            <h2>Manage Data</h2>
+            <div class="form-group">
+                <label>Database:</label>
+                <input type="text" id="current-db" placeholder="Database Name">
+                <label>Table:</label>
+                <input type="text" id="current-table" placeholder="Table Name">
+                <button onclick="fetchData()">View Data</button>
+            </div>
+            <div class="form-group">
+                <h3>Add New Record</h3>
+                <div class="dynamic-fields" id="insert-fields">
+                    <div class="field-row">
+                        <input type="text" placeholder="Field Name" value="id">
+                        <input type="text" placeholder="Value">
+                    </div>
+                </div>
+                <button onclick="addField()">Add Field</button>
+                <button onclick="insertRecord()">Add Record</button>
+            </div>
+            <div class="form-group">
+                <h3>Search Records</h3>
+                <input type="text" id="search-key" placeholder="Field Name">
+                <input type="text" id="search-value" placeholder="Value">
+                <button onclick="searchRecords()">Search</button>
+            </div>
+            <div class="form-group">
+                <h3>Update Record</h3>
+                <input type="text" id="update-key" placeholder="Search Field Name" value="id">
+                <input type="text" id="update-value" placeholder="Search Value">
+                <div class="dynamic-fields" id="update-fields">
+                    <div class="field-row">
+                        <input type="text" placeholder="Field Name">
+                        <input type="text" placeholder="New Value">
+                    </div>
+                </div>
+                <button onclick="addUpdateField()">Add Field</button>
+                <button onclick="updateRecord()">Update</button>
+            </div>
+            <div class="form-group">
+                <h3>Delete Record</h3>
+                <input type="text" id="delete-key" placeholder="Field Name" value="id">
+                <input type="text" id="delete-value" placeholder="Value">
+                <button onclick="deleteRecord()">Delete</button>
+            </div>
+            <div id="results-container">
+                <h3>Results</h3>
+                <div id="results"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const serverUrl = 'http://localhost:5000/master';
+
+        function showMessage(message, isError = false) {
+            const messageBox = document.getElementById('message-box');
+            messageBox.innerHTML = `<div class="message ${isError ? 'error' : 'success'}">${message}</div>`;
+            setTimeout(() => messageBox.innerHTML = '', 5000);
+        }
+
+        function validateName(name, type) {
+            if (!name || name.match(/[`;'"\\]/)) {
+                showMessage(`Invalid ${type} name. Use letters and numbers only.`, true);
+                return false;
+            }
+            return true;
+        }
+
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+                tab.classList.add('active');
+                document.getElementById(tab.dataset.tab).classList.add('active');
+            });
+        });
+
+        function createDatabase() {
+            const dbName = document.getElementById('new-db-name').value.trim();
+            if (!validateName(dbName, 'database')) return;
+            
+            fetch(serverUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Master-Key': 'secret123'
+                },
+                body: JSON.stringify({ action: 'create_db', dbname: dbName })
+            })
+
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to create database');
+                return response.text();
+            })
+            .then(data => {
+                showMessage(`Database created: ${dbName}`);
+                document.getElementById('new-db-name').value = '';
+            })
+            .catch(error => showMessage(error.message, true));
+        }
+
+        function dropDatabase() {
+            const dbName = document.getElementById('delete-db-name').value.trim();
+            if (!validateName(dbName, 'database')) return;
+            if (!confirm(`Are you sure you want to delete database: ${dbName}?`)) return;
+
+            fetch(serverUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Master-Key': 'secret123'
+                },
+                body: JSON.stringify({ action: 'drop_db', dbname: dbName })
+            })
+
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to delete database');
+                return response.text();
+            })
+            .then(data => {
+                showMessage(`Database deleted: ${dbName}`);
+                document.getElementById('delete-db-name').value = '';
+            })
+            .catch(error => showMessage(error.message, true));
+        }
+
+        function addColumn() {
+            const columnsContainer = document.getElementById('table-columns');
+            const newRow = document.createElement('div');
+            newRow.className = 'field-row';
+            newRow.innerHTML = `<input type="text" placeholder="Column Name">`;
+            columnsContainer.appendChild(newRow);
+        }
+
+        function createTable() {
+            const dbName = document.getElementById('db-name-for-table').value.trim();
+            const tableName = document.getElementById('new-table-name').value.trim();
+            if (!validateName(dbName, 'database') || !validateName(tableName, 'table')) return;
+
+            const columns = [];
+            document.querySelectorAll('#table-columns .field-row input').forEach(input => {
+                const col = input.value.trim();
+                if (col && validateName(col, 'column')) columns.push(col);
+            });
+
+            if (columns.length === 0) {
+                showMessage('At least one column is required', true);
+                return;
+            }
+
+            fetch(serverUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Master-Key': 'secret123'
+                },
+                body: JSON.stringify({ action: 'create_table', dbname: dbName, table: tableName, attrs: columns })
+            })
+
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to create table');
+                return response.text();
+            })
+            .then(data => {
+                showMessage(`Table created: ${tableName}`);
+                document.getElementById('db-name-for-table').value = '';
+                document.getElementById('new-table-name').value = '';
+                document.getElementById('table-columns').innerHTML = `
+                    <div class="field-row">
+                        <input type="text" placeholder="Column Name" value="id">
+                    </div>
+                `;
+            })
+            .catch(error => showMessage(error.message, true));
+        }
+
+        function dropTable() {
+            const dbName = document.getElementById('db-name-for-drop').value.trim();
+            const tableName = document.getElementById('table-to-drop').value.trim();
+            if (!validateName(dbName, 'database') || !validateName(tableName, 'table')) return;
+            if (!confirm(`Are you sure you want to delete table: ${tableName}?`)) return;
+
+            fetch(serverUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Master-Key': 'secret123'
+            },
+            body: JSON.stringify({ action: 'drop_table', dbname: dbName, table: tableName })
+        })
+
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to delete table');
+                return response.text();
+            })
+            .then(data => {
+                showMessage(`Table deleted: ${tableName}`);
+                document.getElementById('db-name-for-drop').value = '';
+                document.getElementById('table-to-drop').value = '';
+            })
+            .catch(error => showMessage(error.message, true));
+        }
+
+        function fetchData() {
+            const dbName = document.getElementById('current-db').value.trim();
+            const tableName = document.getElementById('current-table').value.trim();
+            if (!validateName(dbName, 'database') || !validateName(tableName, 'table')) return;
+
+            fetch(serverUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'select', dbname: dbName, table: tableName })
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to fetch data');
+                return response.json();
+            })
+            .then(data => displayResults(data))
+            .catch(error => showMessage(error.message, true));
+        }
+
+        function addField() {
+            const fieldsContainer = document.getElementById('insert-fields');
+            const newRow = document.createElement('div');
+            newRow.className = 'field-row';
+            newRow.innerHTML = `
+                <input type="text" placeholder="Field Name">
+                <input type="text" placeholder="Value">
+            `;
+            fieldsContainer.appendChild(newRow);
+        }
+
+        function insertRecord() {
+            const dbName = document.getElementById('current-db').value.trim();
+            const tableName = document.getElementById('current-table').value.trim();
+            if (!validateName(dbName, 'database') || !validateName(tableName, 'table')) return;
+
+            const data = {};
+            let valid = true;
+            document.querySelectorAll('#insert-fields .field-row').forEach(row => {
+                const [keyInput, valueInput] = row.querySelectorAll('input');
+                const key = keyInput.value.trim();
+                const value = valueInput.value.trim();
+                if (key && value && validateName(key, 'field')) {
+                    data[key] = value;
+                } else if (key || value) {
+                    valid = false;
+                }
+            });
+
+            if (!valid) {
+                showMessage('Please fill all fields or remove empty fields', true);
+                return;
+            }
+            if (Object.keys(data).length === 0) {
+                showMessage('Please enter data for the record', true);
+                return;
+            }
+
+            fetch(serverUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'insert', dbname: dbName, table: tableName, data })
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to add record');
+                return response.text();
+            })
+            .then(data => {
+                showMessage('Record added successfully');
+                fetchData();
+                document.getElementById('insert-fields').innerHTML = `
+                    <div class="field-row">
+                        <input type="text" placeholder="Field Name" value="id">
+                        <input type="text" placeholder="Value">
+                    </div>
+                `;
+            })
+            .catch(error => showMessage(error.message, true));
+        }
+
+        function searchRecords() {
+            const dbName = document.getElementById('current-db').value.trim();
+            const tableName = document.getElementById('current-table').value.trim();
+            const searchKey = document.getElementById('search-key').value.trim();
+            const searchValue = document.getElementById('search-value').value.trim();
+            if (!validateName(dbName, 'database') || !validateName(tableName, 'table') || !validateName(searchKey, 'field')) return;
+            if (!searchValue) {
+                showMessage('Please enter a search value', true);
+                return;
+            }
+
+            fetch(serverUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'search', dbname: dbName, table: tableName, query: { key: searchKey, value: searchValue } })
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Search failed');
+                return response.json();
+            })
+            .then(data => displayResults(data))
+            .catch(error => showMessage(error.message, true));
+        }
+
+        function updateRecord() {
+    const dbName = document.getElementById('current-db').value.trim();
+    const tableName = document.getElementById('current-table').value.trim();
+    const updateKey = document.getElementById('update-key').value.trim();
+    const updateValue = document.getElementById('update-value').value.trim();
+    if (!validateName(dbName, 'database') || !validateName(tableName, 'table') || !validateName(updateKey, 'field')) return;
+    if (!updateValue) {
+        showMessage('Please enter a search value', true);
+        return;
+    }
+
+    const data = {};
+    let valid = true;
+    document.querySelectorAll('#update-fields .field-row').forEach(row => {
+        const [keyInput, valueInput] = row.querySelectorAll('input');
+        const key = keyInput.value.trim();
+        const value = valueInput.value.trim();
+        if (key && value && validateName(key, 'field')) {
+            data[key] = value;
+        } else if (key || value) {
+            valid = false;
+        }
+    });
+
+    if (!valid) {
+        showMessage('Please fill all update fields or remove empty fields', true);
+        return;
+    }
+    if (Object.keys(data).length === 0) {
+        showMessage('Please enter data to update', true);
+        return;
+    }
+
+    fetch(serverUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            action: 'update',
+            dbname: dbName,
+            table: tableName,
+            query: { key: updateKey, value: updateValue },
+            data
+        })
+    })
+    .then(async response => {
+        const message = await response.text();
+        if (!response.ok) throw new Error(message || 'Failed to update record');
+        return message;
+    })
+    .then(message => {
+        showMessage(message);
+        fetchData();
+        document.getElementById('update-fields').innerHTML = `
+            <div class="field-row">
+                <input type="text" placeholder="Field Name">
+                <input type="text" placeholder="New Value">
+            </div>
+        `;
+        document.getElementById('update-value').value = '';
+    })
+    .catch(error => showMessage(error.message, true));
+}
+
+
+        function deleteRecord() {
+            const dbName = document.getElementById('current-db').value.trim();
+            const tableName = document.getElementById('current-table').value.trim();
+            const deleteKey = document.getElementById('delete-key').value.trim();
+            const deleteValue = document.getElementById('delete-value').value.trim();
+            if (!validateName(dbName, 'database') || !validateName(tableName, 'table') || !validateName(deleteKey, 'field')) return;
+            if (!deleteValue) {
+                showMessage('Please enter a value to delete', true);
+                return;
+            }
+            if (!confirm('Are you sure you want to delete this record?')) return;
+
+            fetch(serverUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'delete', dbname: dbName, table: tableName, query: { key: deleteKey, value: deleteValue } })
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to delete record');
+                return response.text();
+            })
+            .then(data => {
+                showMessage('Record deleted successfully');
+                fetchData();
+                document.getElementById('delete-value').value = '';
+            })
+            .catch(error => showMessage(error.message, true));
+        }
+
+        function displayResults(data) {
+            const resultsContainer = document.getElementById('results');
+            if (data.length === 0) {
+                resultsContainer.innerHTML = '<p>No results found</p>';
+                return;
+            }
+
+            let html = '<table><thead><tr>';
+            const headers = Object.keys(data[0]);
+            headers.forEach(header => html += `<th>${header}</th>`);
+            html += '</tr></thead><tbody>';
+
+            data.forEach(row => {
+                html += '<tr>';
+                headers.forEach(header => html += `<td>${row[header] || ''}</td>`);
+                html += '</tr>';
+            });
+
+            html += '</tbody></table>';
+            resultsContainer.innerHTML = html;
+        }
+
+        window.onload = function() {
+            fetch(serverUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'ping' })
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to connect to server');
+                return response.text();
+            })
+            .then(data => showMessage('Successfully connected to server'))
+            .catch(error => showMessage('Cannot connect to server. Ensure server is running on port 5000', true));
+        };
+        
+    </script>
+    
+</body>
+</html>
