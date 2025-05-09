@@ -49,10 +49,10 @@ cd distributed-database-system
 
 ### 2. Start MySQL Server
 Ensure MySQL is running and credentials are correct in:
-- `master.go`: `root:password of master device`
-- `slave.go`: `root:password of slave device`
+- `master.go`: `root:password of MySQL in master device`
+- `slave.go`: `root:password of MySQL in slave device`
 
-Update if necessary in `sql.Open(...)`.
+Update password of MySQL in `sql.Open(...)`.
 
 
 ### 3. Define Slave IPs in `master.go`
@@ -66,6 +66,7 @@ var slaves = []string{
 }
 ```
 
+> Replace `IP of slave 1` and `IP of slave 2` with the actual IP address of the slaves in your network.
 > Make sure these addresses are reachable from the master machine.
 
 
