@@ -23,7 +23,7 @@ A lightweight, distributed MySQL management system with:
       +-------------+                                 +-------------+
             ↑
             |
-     POST /master
+  /master  (POST, GET, PUT, DELETE)
             ↑
          Web UI (index.html)
 ```
